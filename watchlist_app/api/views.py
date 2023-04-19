@@ -10,7 +10,7 @@ from rest_framework import viewsets
 from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
-from watchlist_app.api.permissions import AdminOrReadOnly
+from watchlist_app.api.permissions import AdminOrReadOnly,ReviewUserOrReadOnly
 
 class ReviewCreate(generics.CreateAPIView):
     serializer_class = ReviewSerializer
@@ -53,7 +53,7 @@ class ReviewList(generics.ListCreateAPIView):
 class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer 
-    permission_classes = [AdminOrReadOnly] 
+    permission_classes = [ReviewUserOrReadOnly] 
 
 # class ReviewDetail(mixins.RetrieveModelMixin,generics.GenericAPIView):
 #     queryset = Review.objects.all()

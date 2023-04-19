@@ -16,10 +16,10 @@ urlpatterns = [
     
     # path('review/',ReviewList.as_view(), name = 'Review-list'),
     # path('review/<int:pk>',ReviewDetail.as_view(), name = 'Review-detail'),
-    path('<int:pk>/review-create', ReviewCreate.as_view(), name = 'Review-create'),
+    path('<int:pk>/review-create/', ReviewCreate.as_view(), name = 'Review-create'),
     
-    path('<int:pk>/review', ReviewList.as_view(), name = 'Review-list'),
-    path('review/<int:pk>', ReviewDetail.as_view(), name = 'Review-detail'),
+    path('<int:pk>/reviews/', ReviewList.as_view(), name = 'Review-list'),
+    path('review/<int:pk>/', ReviewDetail.as_view(), name = 'Review-detail'),
 
     # path('review/<int:pk>',ReviewDetail.as_view(), name = 'Review-detail'),
     
