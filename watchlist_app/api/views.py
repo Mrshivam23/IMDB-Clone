@@ -13,7 +13,20 @@ from rest_framework.permissions import IsAuthenticated
 from watchlist_app.api.permissions import IsAdminOrReadOnly,IsReviewUserOrReadOnly
 from rest_framework.throttling import UserRateThrottle,AnonRateThrottle,ScopedRateThrottle
 from watchlist_app.api.throttling import ReviewCreateThrottle,RevieListThrottle
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 
+class UserReview(generics.ListCreateAPIView):
+    serializer_class = ReviewSerializer
+    # def get_queryset(self):
+    #     username = self.kwargs['username']
+    #     return Review.objects.filter(review_user__username=username)
+    
+    
+    def get_queryset(self):
+        username = self.request.query_params.get('username')
+        return Review.objects.filter(review_user__username=username)
+    
 
 class ReviewCreate(generics.CreateAPIView):
     serializer_class = ReviewSerializer
@@ -47,8 +60,10 @@ class ReviewCreate(generics.CreateAPIView):
 class ReviewList(generics.ListCreateAPIView):
     # queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     throttle_classes = [RevieListThrottle,AnonRateThrottle]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['review_user__username', 'active']
     
 
     def get_queryset(self):
@@ -145,9 +160,19 @@ class StreamPlatformDetailAV(APIView):
         movie = StreamPlatform.objects.get(pk=pk)
         movie.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
+    
+    
+class WatchListGV(generics.ListCreateAPIView):
+    queryset = WatchList.objects.all()
+    serializer_class = WatchListSerializer
+    # filter_backends = [filters.SearchFilter]
+    filter_backends = [filters.OrderingFilter]
+    # filterset_fields = ['title', 'platform__name']
+    ordering_fields = ['avg_rating']
+    
+    
                 
-class WatchListListAV(APIView):
+class WatchListAV(APIView):
     permission_classes = [IsAdminOrReadOnly]
     
     def get(self,request):
