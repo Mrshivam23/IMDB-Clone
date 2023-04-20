@@ -11,11 +11,14 @@ from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from watchlist_app.api.permissions import IsAdminOrReadOnly,IsReviewUserOrReadOnly
+from rest_framework.throttling import UserRateThrottle,AnonRateThrottle,ScopedRateThrottle
+from watchlist_app.api.throttling import ReviewCreateThrottle,RevieListThrottle
+
 
 class ReviewCreate(generics.CreateAPIView):
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticated]
-    
+    throttle_classes = [ReviewCreateThrottle]
     def query_set():
         return Review.objects.all()
     
@@ -45,6 +48,8 @@ class ReviewList(generics.ListCreateAPIView):
     # queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticated]
+    throttle_classes = [RevieListThrottle,AnonRateThrottle]
+    
 
     def get_queryset(self):
         pk = self.kwargs['pk']
@@ -55,6 +60,8 @@ class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer 
     permission_classes = [IsReviewUserOrReadOnly] 
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'review-detail'
 
 # class ReviewDetail(mixins.RetrieveModelMixin,generics.GenericAPIView):
 #     queryset = Review.objects.all()
